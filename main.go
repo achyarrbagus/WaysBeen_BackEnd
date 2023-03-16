@@ -35,5 +35,5 @@ func main() {
 
 	e.Static("/uploads", "./uploads")
 	fmt.Println("server running localhost:5000")
-	e.Logger.Fatal(e.Start("localhost:" + port)) // delete localhost
+	e.Logger.Fatal(e.Start(":" + port)) // delete localhost
 }
