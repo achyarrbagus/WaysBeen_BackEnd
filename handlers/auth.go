@@ -60,11 +60,14 @@ func (h *handlerAuth) Register(c echo.Context) error {
 	}
 
 	createdProfil := models.Profile{
+		ID:        0,
 		Email:     requestEmail,
+		Photo:     "",
 		Phone:     "",
-		UserID:    data.ID,
 		Gender:    "",
 		Address:   "",
+		UserID:    data.ID,
+		User:      models.UsersProfileResponse{},
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
