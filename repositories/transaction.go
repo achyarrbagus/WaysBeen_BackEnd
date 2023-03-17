@@ -103,8 +103,9 @@ func (r *repository) UpdateTransaction(status string, ID int) (models.Transactio
 		}
 	}
 	transaction.Status = status
+	err := r.db.Raw("UPDATE 'transactions' SET 'status' = ?, WHERE id= ?", status, transaction.ID).Error
 
-	err := r.db.Model(&transaction).Where("id=?", transaction.ID).Update("status", status).Error
+	// err := r.db.Model(&transaction).Where("id=?", transaction.ID).Update("status", status).Error
 
 	return transaction, err
 }
