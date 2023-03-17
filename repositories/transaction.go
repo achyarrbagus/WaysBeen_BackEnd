@@ -104,7 +104,7 @@ func (r *repository) UpdateTransaction(status string, ID int) (models.Transactio
 	}
 	transaction.Status = status
 
-	err := r.db.Save(&transaction).Update("status", status).Error
+	err := r.db.Model(&transaction).Update("status", status).Error
 
 	return transaction, err
 }
