@@ -44,66 +44,67 @@ func (r *repository) FindTransaction() ([]models.Transaction, error) {
 	return Transaction, err
 
 }
-func (r *repository) UpdateTransaction(status string, ID int) (models.Transaction, error) {
-	// Begin transaction
-	tx := r.db.Begin()
-
-	// Get data from db product
-	var transaction models.Transaction
-	if err := tx.Preload("Cart").First(&transaction, ID).Error; err != nil {
-		tx.Rollback()
-		return transaction, err
-	}
-
-	// Update transaction status
-	transaction.Status = status
-	if err := tx.Save(&transaction).Error; err != nil {
-		tx.Rollback()
-		return transaction, err
-	}
-
-	// If status is "success", decrement product quantity
-	if status == "success" {
-		for _, v := range transaction.Cart {
-			var product models.Product
-			if err := tx.First(&product, v.ProductID).Error; err != nil {
-				tx.Rollback()
-				return transaction, err
-			}
-			product.Stock -= v.OrderQuantity
-			if err := tx.Save(&product).Update("status", status).Error; err != nil {
-				tx.Rollback()
-				return transaction, err
-			}
-		}
-	}
-
-	// Commit transaction
-	if err := tx.Commit().Error; err != nil {
-		tx.Rollback()
-		return transaction, err
-	}
-
-	return transaction, nil
-}
 
 // func (r *repository) UpdateTransaction(status string, ID int) (models.Transaction, error) {
-// 	// get data from db product
+// 	// Begin transaction
+// 	tx := r.db.Begin()
 
+// 	// Get data from db product
 // 	var transaction models.Transaction
-// 	r.db.Preload("Cart").First(&transaction, ID)
-// 	// If is different & Status is "success" decrement product quantity
-// 	if status != transaction.Status && status == "success" {
+// 	if err := tx.Preload("Cart").First(&transaction, ID).Error; err != nil {
+// 		tx.Rollback()
+// 		return transaction, err
+// 	}
+
+// 	// Update transaction status
+// 	transaction.Status = status
+// 	if err := tx.Save(&transaction).Error; err != nil {
+// 		tx.Rollback()
+// 		return transaction, err
+// 	}
+
+// 	// If status is "success", decrement product quantity
+// 	if status == "success" {
 // 		for _, v := range transaction.Cart {
 // 			var product models.Product
-// 			r.db.First(&product, v.ProductID)
-// 			product.Stock = product.Stock - v.OrderQuantity
-// 			r.db.Save(&product)
+// 			if err := tx.First(&product, v.ProductID).Error; err != nil {
+// 				tx.Rollback()
+// 				return transaction, err
+// 			}
+// 			product.Stock -= v.OrderQuantity
+// 			if err := tx.Save(&product).Update("status", status).Error; err != nil {
+// 				tx.Rollback()
+// 				return transaction, err
+// 			}
 // 		}
 // 	}
-// 	transaction.Status = status
 
-// 	err := r.db.Save(&transaction).Error
+// 	// Commit transaction
+// 	if err := tx.Commit().Error; err != nil {
+// 		tx.Rollback()
+// 		return transaction, err
+// 	}
 
-// 	return transaction, err
+// 	return transaction, nil
 // }
+
+func (r *repository) UpdateTransaction(status string, ID int) (models.Transaction, error) {
+	// get data from db product
+
+	var transaction models.Transaction
+	r.db.Preload("Cart").First(&transaction, ID)
+	// If is different & Status is "success" decrement product quantity
+	if status != transaction.Status && status == "success" {
+		for _, v := range transaction.Cart {
+			var product models.Product
+			r.db.First(&product, v.ProductID)
+			product.Stock = product.Stock - v.OrderQuantity
+			r.db.Save(&product)
+		}
+	}
+	transaction.Status = status
+
+	err := r.db.Save(&transaction).Update("status", status).Error
+
+	return transaction, err
+}
