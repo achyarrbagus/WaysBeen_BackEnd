@@ -71,7 +71,7 @@ func (r *repository) UpdateTransaction(status string, ID int) (models.Transactio
 				return transaction, err
 			}
 			product.Stock -= v.OrderQuantity
-			if err := tx.Save(&product).Error; err != nil {
+			if err := tx.Save(&product).Update("status", status).Error; err != nil {
 				tx.Rollback()
 				return transaction, err
 			}
