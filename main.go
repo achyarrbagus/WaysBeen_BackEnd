@@ -34,6 +34,6 @@ func main() {
 	routes.RouteInit(e.Group("/api/v1"))
 
 	e.Static("/uploads", "./uploads")
-	fmt.Println("server running localhost:5000")
+	fmt.Println("server running localhost:" + port)
 	e.Logger.Fatal(e.Start(":" + port)) // delete localhost
 }
